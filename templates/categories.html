@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Categories – New Metro Big Bazaar{% endblock %}
+{% block page_title %}Categories{% endblock %}
+
+{% block content %}
+<div class="page-header"><h2>Categories</h2><p>Manage product categories.</p></div>
+
+<div class="row g-4">
+  <!-- Add Category -->
+  <div class="col-lg-4">
+    <div class="table-card p-4">
+      <h6 class="fw-700 text-primary mb-3"><i class="fas fa-plus me-1"></i>Add New Category</h6>
+      <form method="POST" action="{{ url_for('add_category') }}">
+        <div class="mb-3">
+          <label class="form-label">Category Name *</label>
+          <input type="text" name="name" class="form-control" required placeholder="e.g. Electronics">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Description</label>
+          <textarea name="description" class="form-control" rows="2" placeholder="Optional..."></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary w-100"><i class="fas fa-plus me-1"></i>Add Category</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Categories List -->
+  <div class="col-lg-8">
+    <div class="table-card">
+      <div class="card-header"><i class="fas fa-tags me-2"></i>All Categories ({{ categories|length }})</div>
+      <table class="table table-hover mb-0">
+        <thead><tr><th>#</th><th>Name</th><th>Description</th><th>Products</th><th>Actions</th></tr></thead>
+        <tbody>
+          {% for cat in categories %}
+          <tr>
+            <td class="text-muted">{{ loop.index }}</td>
+            <td><span class="badge-cat fw-600">{{ cat.name }}</span></td>
+            <td class="text-muted small">{{ cat.description or '–' }}</td>
+            <td><span class="badge-ok">{{ cat.product_count }}</span></td>
+            <td>
+              {% if cat.product_count == 0 %}
+              <form method="POST" action="{{ url_for('delete_category', cid=cat.id) }}" onsubmit="return confirm('Delete this category?')">
+                <button class="btn btn-sm btn-danger-soft"><i class="fas fa-trash"></i></button>
+              </form>
+              {% else %}
+              <button class="btn btn-sm btn-outline-secondary" disabled title="Cannot delete — has products"><i class="fas fa-lock"></i></button>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends "base.html" %}
+{% block auth_content %}
+<style>
+body { background: linear-gradient(135deg, #1a237e 0%, #283593 50%, #1565c0 100%); }
+.login-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 20px; }
+.login-card {
+  background: #fff; border-radius: 24px; padding: 48px 44px;
+  width: 100%; max-width: 420px;
+  box-shadow: 0 30px 80px rgba(0,0,0,.35);
+}
+.login-logo { font-family: 'Playfair Display', serif; color: #1a237e; font-size: 1.6rem; font-weight: 700; }
+.login-logo span { color: #e53935; }
+.login-subtitle { color: #6c757d; font-size: .85rem; letter-spacing: 1.5px; text-transform: uppercase; }
+.divider { height: 3px; background: linear-gradient(90deg, #1a237e, #e53935); border-radius: 3px; margin: 24px 0; }
+.btn-login { background: linear-gradient(135deg, #1a237e, #283593); color: #fff; border: none; border-radius: 12px; padding: 13px; font-size: 1rem; font-weight: 600; width: 100%; transition: all .3s; }
+.btn-login:hover { background: linear-gradient(135deg, #283593, #1a237e); transform: translateY(-1px); box-shadow: 0 6px 20px rgba(26,35,126,.35); }
+.input-group-text { background: #f0f2f8; border: 1.5px solid #e0e0e0; color: #1a237e; border-radius: 10px 0 0 10px; }
+.form-control { border-left: none; }
+.cred-hint { background: #f0f4ff; border-radius: 12px; padding: 12px 16px; font-size: .8rem; color: #4a5568; border-left: 3px solid #1a237e; }
+</style>
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="text-center mb-2">
+      <img src="{{ url_for('static', filename='img/logo.webp') }}" alt="New Metro Big Bazaar" style="width:200px;height:auto;display:block;margin:0 auto;">
+    </div>
+    <div class="text-center">
+      <div class="login-logo">New Metro <span>Big Bazaar</span></div>
+      <div class="login-subtitle mt-1">Billing & Inventory System</div>
+    </div>
+    <div class="divider"></div>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% for cat, msg in messages %}
+        <div class="alert alert-{{ cat }} mb-3 py-2">{{ msg }}</div>
+      {% endfor %}
+    {% endwith %}
+
+    <form method="POST">
+      <div class="mb-3">
+        <label class="form-label">Username</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-user"></i></span>
+          <input type="text" name="username" class="form-control" placeholder="Enter username" required autofocus>
+        </div>
+      </div>
+      <div class="mb-4">
+        <label class="form-label">Password</label>
+        <div class="input-group">
+          <span class="input-group-text"><i class="fas fa-lock"></i></span>
+          <input type="password" name="password" id="pwd" class="form-control" placeholder="Enter password" required>
+          <button class="btn btn-outline-secondary" type="button" onclick="togglePwd()"><i class="fas fa-eye" id="eye-icon"></i></button>
+        </div>
+      </div>
+      <button type="submit" class="btn-login">
+        <i class="fas fa-sign-in-alt me-2"></i>Sign In
+      </button>
+    </form>
+
+    <div class="cred-hint mt-4">
+      <i class="fas fa-info-circle me-1"></i>
+      <strong>Default credentials:</strong> admin / admin123
+    </div>
+  </div>
+</div>
+<script>
+function togglePwd() {
+  const p = document.getElementById('pwd');
+  const i = document.getElementById('eye-icon');
+  p.type = p.type === 'password' ? 'text' : 'password';
+  i.className = p.type === 'password' ? 'fas fa-eye' : 'fas fa-eye-slash';
+}
+</script>
+{% endblock %}

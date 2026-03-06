@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}Inventory – New Metro Big Bazaar{% endblock %}
+{% block page_title %}Inventory Management{% endblock %}
+
+{% block content %}
+<div class="page-header"><h2>Inventory Management</h2><p>Monitor stock levels and restock products.</p></div>
+
+{% set ns = namespace(out_of_stock=0, low_stock=0) %}
+{% for p in products %}
+  {% if p.stock == 0 %}
+    {% set ns.out_of_stock = ns.out_of_stock + 1 %}
+  {% elif p.stock <= p.low_stock_threshold %}
+    {% set ns.low_stock = ns.low_stock + 1 %}
+  {% endif %}
+{% endfor %}
+
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <div class="stat-card card-blue">
+      <div class="icon-wrap mb-2"><i class="fas fa-boxes"></i></div>
+      <div class="card-value">{{ products|length }}</div>
+      <div class="card-label">Total Products</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card card-red">
+      <div class="icon-wrap mb-2"><i class="fas fa-exclamation-triangle"></i></div>
+      <div class="card-value">{{ ns.out_of_stock }}</div>
+      <div class="card-label">Out of Stock</div>
+    </div>
+  </div>
+  <div class="col-md-4">
+    <div class="stat-card card-gold">
+      <div class="icon-wrap mb-2"><i class="fas fa-battery-quarter"></i></div>
+      <div class="card-value">{{ ns.low_stock }}</div>
+      <div class="card-label">Low Stock Items</div>
+    </div>
+  </div>
+</div>
+
+<div class="table-card">
+  <div class="card-header"><i class="fas fa-warehouse me-2"></i>Stock Levels (sorted by stock ↑)</div>
+  <div class="table-responsive">
+    <table class="table table-hover mb-0">
+      <thead>
+        <tr><th>Product</th><th>Category</th><th>Price</th><th>Current Stock</th><th>Alert At</th><th>Status</th><th>Restock</th></tr>
+      </thead>
+      <tbody>
+        {% for p in products %}
+        {% if p.stock == 0 %}
+          {% set row_class = 'table-danger' %}
+        {% elif p.stock <= p.low_stock_threshold %}
+          {% set row_class = 'table-warning' %}
+        {% else %}
+          {% set row_class = '' %}
+        {% endif %}
+        <tr class="{{ row_class }}">
+          <td class="fw-600">{{ p.name }}</td>
+          <td><span class="badge-cat">{{ p.cat_name }}</span></td>
+          <td>₹{{ "%.2f"|format(p.price) }}</td>
+          <td>
+            {% if p.stock == 0 %}
+              <span class="fw-700 text-danger">{{ p.stock }}</span>
+            {% elif p.stock <= p.low_stock_threshold %}
+              <span class="fw-700 text-warning">{{ p.stock }}</span>
+            {% else %}
+              <span class="fw-700 text-success">{{ p.stock }}</span>
+            {% endif %}
+          </td>
+          <td class="text-muted">{{ p.low_stock_threshold }}</td>
+          <td>
+            {% if p.stock == 0 %}
+              <span class="badge bg-danger">Out of Stock</span>
+            {% elif p.stock <= p.low_stock_threshold %}
+              <span class="badge-low">Low Stock</span>
+            {% else %}
+              <span class="badge-ok">✓ OK</span>
+            {% endif %}
+          </td>
+          <td>
+            <form method="POST" action="{{ url_for('restock', pid=p.id) }}" class="d-flex gap-1">
+              <input type="number" name="qty" class="form-control form-control-sm" style="width:70px" min="1" value="10" required>
+              <button type="submit" class="btn btn-sm btn-primary">+Add</button>
+            </form>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}
